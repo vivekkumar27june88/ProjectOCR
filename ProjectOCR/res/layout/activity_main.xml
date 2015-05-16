@@ -11,34 +11,80 @@
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_launcher" />
 
-    <Button
-        android:id="@+id/prev_button"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/imageView1"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
-        android:text="Prev" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:orientation="vertical"
+        android:showDividers="beginning" >
 
-    <Button
-        android:id="@+id/start_camera_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/prev_button"
-        android:layout_alignBottom="@+id/prev_button"
-        android:layout_centerHorizontal="true"
-        android:text="Camera" />
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="63dp" >
 
-    <Button
-        android:id="@+id/next_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/imageView1"
-        android:layout_alignTop="@+id/prev_button"
-        android:text="Next" />
+            <TextView
+                android:id="@+id/accountTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:text="Account #:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/accountNumberTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:paddingLeft="5dp"
+                android:text="000000000000000"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/prev_button"
+                style="@style/AppTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:text="Prev" />
+
+            <Button
+                android:id="@+id/next_button"
+                style="@style/AppTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Next" />
+
+            <Button
+                android:id="@+id/start_camera_button"
+                style="@style/AppTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Camera" />
+
+            <Button
+                android:id="@+id/selectImagebutton"
+                style="@style/AppTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Browse" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
