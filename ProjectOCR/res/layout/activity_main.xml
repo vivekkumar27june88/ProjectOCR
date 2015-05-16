@@ -8,9 +8,37 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.projectocr.MainActivity" >
 
-    <TextView
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher" />
+
+    <Button
+        android:id="@+id/prev_button"
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignLeft="@+id/imageView1"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:text="Prev" />
+
+    <Button
+        android:id="@+id/start_camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/prev_button"
+        android:layout_alignBottom="@+id/prev_button"
+        android:layout_centerHorizontal="true"
+        android:text="Camera" />
+
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imageView1"
+        android:layout_alignTop="@+id/prev_button"
+        android:text="Next" />
 
 </RelativeLayout>
