@@ -40,7 +40,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private Button selectImagebutton = null;
 	private int curSelectedIndex = -1;
 	private static final int REQUEST_CODE = 1;
-
+	private OCREngine ocrEngine = null;
+	
 	private int getCurSelectedIndex() {
 
 		return curSelectedIndex;
@@ -83,6 +84,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			this.setCurSelectedIndex(0);
 			changeImage(MainActivity.Naviagation.NO_CHANGE);
 		}
+		else {
+			this.setButtonState();
+		}
+		
+		this.ocrEngine = new OCREngine(getApplicationContext());
 	}
 
 	private void populateImageFileList() {
@@ -139,22 +145,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	@Override public void onClick(View v) {
 
-		switch (v.getId()) {
-		case R.id.prev_button:
+		int id = v.getId();
+		if (id == R.id.prev_button) {
 			changeImage(MainActivity.Naviagation.PREV);
-			break;
-
-		case R.id.start_camera_button:
-			break;
-
-		case R.id.selectImagebutton:
-			pickImageFromDevice();
-			break;
-
-		case R.id.next_button:
-			changeImage(MainActivity.Naviagation.NEXT);
-			break;
 		}
+		else if (id == R.id.next_button) {
+			changeImage(MainActivity.Naviagation.NEXT);
+		}
+		else if (id == R.id.start_camera_button) {
+			String renderedText = this.ocrEngine.renderText(new File("/storage/emulated/0/Download/projectOCR/number.jpg"));
+			Log.i("VIVEK", "Renderred Text is :  " + renderedText);
+		}
+		else if (id == R.id.selectImagebutton) {
+			pickImageFromDevice();
+		}
+
 	}
 
 	private void pickImageFromDevice() {
@@ -204,7 +209,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		else if (nav == MainActivity.Naviagation.LAST) {
 			this.setCurSelectedIndex(this.locImageFileList.size() - 1);
 		}
-		
 
 		Bitmap bitmap = BitmapFactory.decodeFile(this.locImageFileList.get(
 				this.getCurSelectedIndex()).toString());
@@ -213,8 +217,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	private void setButtonState() {
 
-		this.prevButton.setEnabled(this.getCurSelectedIndex() != 0);
-		this.nextButton
-				.setEnabled(this.getCurSelectedIndex() != (this.locImageFileList.size() - 1));
+		this.prevButton.setEnabled(this.getCurSelectedIndex() > 0);
+		this.nextButton.setEnabled(this.getCurSelectedIndex() < (this.locImageFileList.size() - 1));
 	}
 }
