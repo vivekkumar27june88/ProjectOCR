@@ -25,8 +25,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -41,7 +39,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private int curSelectedIndex = -1;
 	private static final int REQUEST_CODE = 1;
 	private OCREngine ocrEngine = null;
-	
+
 	private int getCurSelectedIndex() {
 
 		return curSelectedIndex;
@@ -87,7 +85,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		else {
 			this.setButtonState();
 		}
-		
+
 		this.ocrEngine = new OCREngine(getApplicationContext());
 	}
 
@@ -153,7 +151,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			changeImage(MainActivity.Naviagation.NEXT);
 		}
 		else if (id == R.id.start_camera_button) {
-			String renderedText = this.ocrEngine.renderText(new File("/storage/emulated/0/Download/projectOCR/number.jpg"));
+			//launchCameraActivity();
+			String renderedText = this.ocrEngine.renderText(new File(
+					"/storage/emulated/0/Download/projectOCR/hsbc.jpg"));
 			Log.i("VIVEK", "Renderred Text is :  " + renderedText);
 		}
 		else if (id == R.id.selectImagebutton) {
@@ -169,6 +169,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		intent.setAction(Intent.ACTION_GET_CONTENT);
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 		startActivityForResult(intent, REQUEST_CODE);
+	}
+
+	private void launchCameraActivity() {
+
+		Intent cameraLanchIntent = new Intent(this, CameraActivity.class);
+		startActivity(cameraLanchIntent);
 	}
 
 	@Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {

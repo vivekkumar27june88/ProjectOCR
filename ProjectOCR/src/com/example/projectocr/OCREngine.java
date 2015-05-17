@@ -78,7 +78,7 @@ public class OCREngine {
 	private Bitmap getBitmapFromImageFile(File imageFile) {
 
 		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inSampleSize = 4;
+		options.inSampleSize = 2;
 		
 		Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
 
@@ -144,10 +144,11 @@ public class OCREngine {
 		
 		tessBaseAPI.init(tessDataDirPath1, lang);
 		//For example if we want to only detect numbers
-        tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890");
+       /* tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890");
         tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
-                "YTREWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
-		Bitmap bitmap = getBitmapFromImageFile(imageFile);
+                "YTREWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");*/
+        tessBaseAPI.setPageSegMode(TessBaseAPI.OEM_CUBE_ONLY);
+        Bitmap bitmap = getBitmapFromImageFile(imageFile);
 		tessBaseAPI.setImage(bitmap);
 
 		String recognizedText = tessBaseAPI.getUTF8Text();
