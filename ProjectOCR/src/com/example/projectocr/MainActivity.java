@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -41,6 +42,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private int curSelectedIndex = -1;
 	private static final int REQUEST_CODE = 1;
 	private static final int REQUEST_CODE_TAKE_IMAGE = 2;
+	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+	private static String imageFilePathToBeCapture = null;
 	private OCREngine ocrEngine = null;
 
 	private int getCurSelectedIndex() {
@@ -156,12 +159,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			changeImage(MainActivity.Naviagation.NEXT);
 		}
 		else if (id == R.id.start_camera_button) {
+			//pickImageUsingImageCaptureIntent();
 			launchCameraActivity();
 		}
 		else if (id == R.id.selectImagebutton) {
 			pickImageFromDevice();
 		}
-		else if(id == R.id.imageView1) {
+		else if (id == R.id.imageView1) {
 			setExtractedText();
 		}
 	}
@@ -183,10 +187,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		startActivityForResult(intent, MainActivity.REQUEST_CODE);
 	}
 
+	private void pickImageUsingImageCaptureIntent() {
+
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		this.imageFilePathToBeCapture = Environment.getExternalStoragePublicDirectory(
+				Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+				+ File.separator + "projectOCR" + File.separator + (UUID.randomUUID().toString() + ".jpg");
+
+		File f = new File(this.imageFilePathToBeCapture);
+		Uri fileUri = Uri.fromFile(f);
+
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+	}
+
 	private void launchCameraActivity() {
 
 		Intent cameraLanchIntent = new Intent(this, CameraActivity.class);
-		//startActivity(cameraLanchIntent);
+		// startActivity(cameraLanchIntent);
 		startActivityForResult(cameraLanchIntent, MainActivity.REQUEST_CODE_TAKE_IMAGE);
 	}
 
@@ -205,10 +223,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				}
 			}
 		}
-		else if(requestCode == MainActivity.REQUEST_CODE_TAKE_IMAGE && resultCode == Activity.RESULT_OK) {
+		else if (requestCode == MainActivity.REQUEST_CODE_TAKE_IMAGE
+				&& resultCode == Activity.RESULT_OK) {
 			addNewItemInImageList(intent.getStringExtra("IMAGE_PATH"));
 		}
-		
+		else if (requestCode == MainActivity.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+			if (resultCode == Activity.RESULT_OK) {
+				addNewItemInImageList(this.imageFilePathToBeCapture);
+			}
+			else {
+			}
+			this.imageFilePathToBeCapture = null;
+		}
+
 		super.onActivityResult(requestCode, resultCode, intent);
 	}
 
@@ -216,8 +243,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 		File file = new File(filePath);
 		if (file.isFile() == true) {
-			if (file.getName().endsWith(".png") == true
-					|| file.getName().endsWith(".jpg") == true
+			if (file.getName().endsWith(".png") == true || file.getName().endsWith(".jpg") == true
+					|| file.getName().endsWith(".jpeg") == true) {
+				this.locImageFileList.add(file);
+				this.changeImage(MainActivity.Naviagation.LAST);
+			}
+		}
+	}
+	
+	private void addNewItemInImageList(File file) {
+
+		if (file.isFile() == true) {
+			if (file.getName().endsWith(".png") == true || file.getName().endsWith(".jpg") == true
 					|| file.getName().endsWith(".jpeg") == true) {
 				this.locImageFileList.add(file);
 				this.changeImage(MainActivity.Naviagation.LAST);
@@ -241,7 +278,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		Bitmap bitmap = BitmapFactory.decodeFile(this.locImageFileList.get(
 				this.getCurSelectedIndex()).toString());
 		this.imageView.setImageBitmap(bitmap);
-		
+
 		this.infoTextView.setText("Click image to extract text");
 	}
 
