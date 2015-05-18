@@ -11,80 +11,64 @@
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
+        android:layout_height="250dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="0dp"
+        android:scaleType="centerInside"
         android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/infoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/imageView1"
+        android:text="@string/info_extracted_"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:orientation="vertical"
-        android:showDividers="beginning" >
+        android:orientation="horizontal" >
 
-        <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="63dp" >
+        <Button
+            android:id="@+id/prev_button"
+            style="@style/AppTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/prev" />
 
-            <TextView
-                android:id="@+id/accountTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
-                android:text="Account #:"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+        <Button
+            android:id="@+id/next_button"
+            style="@style/AppTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/next" />
 
-            <TextView
-                android:id="@+id/accountNumberTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:paddingLeft="5dp"
-                android:text="000000000000000"
-                android:textSize="18sp" />
+        <Button
+            android:id="@+id/start_camera_button"
+            style="@style/AppTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/cam" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/prev_button"
-                style="@style/AppTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:text="Prev" />
-
-            <Button
-                android:id="@+id/next_button"
-                style="@style/AppTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Next" />
-
-            <Button
-                android:id="@+id/start_camera_button"
-                style="@style/AppTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Camera" />
-
-            <Button
-                android:id="@+id/selectImagebutton"
-                style="@style/AppTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Browse" />
-        </LinearLayout>
-
+        <Button
+            android:id="@+id/selectImagebutton"
+            style="@style/AppTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/sel" />
     </LinearLayout>
 
 </RelativeLayout>

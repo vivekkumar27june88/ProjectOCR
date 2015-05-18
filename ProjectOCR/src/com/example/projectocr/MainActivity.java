@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private ArrayList<File> locImageFileList = null;
 	private String imageDirPath = null;
 	private ImageView imageView = null;
+	private TextView infoTextView = null;
 	private Button prevButton = null;
 	private Button nextButton = null;
 	private Button startCameraButton = null;
@@ -57,6 +59,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	private void init() {
 
+		this.ocrEngine = new OCREngine(getApplicationContext());
 		// imageDirPath = getFilesDir().getAbsolutePath() + File.separator +
 		// "images";
 		imageDirPath = Environment.getExternalStoragePublicDirectory(
@@ -64,6 +67,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				+ File.separator + "projectOCR";
 		this.locImageFileList = new ArrayList<File>();
 		populateImageFileList();
+
+		this.infoTextView = (TextView) findViewById(R.id.infoTextView);
 
 		this.prevButton = (Button) findViewById(R.id.prev_button);
 		this.prevButton.setOnClickListener(this);
@@ -78,6 +83,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		this.selectImagebutton.setOnClickListener(this);
 
 		this.imageView = (ImageView) findViewById(R.id.imageView1);
+		this.imageView.setOnClickListener(this);
 		if (this.locImageFileList.isEmpty() == false) {
 			this.setCurSelectedIndex(0);
 			changeImage(MainActivity.Naviagation.NO_CHANGE);
@@ -85,8 +91,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		else {
 			this.setButtonState();
 		}
-
-		this.ocrEngine = new OCREngine(getApplicationContext());
 	}
 
 	private void populateImageFileList() {
@@ -151,15 +155,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			changeImage(MainActivity.Naviagation.NEXT);
 		}
 		else if (id == R.id.start_camera_button) {
-			//launchCameraActivity();
-			String renderedText = this.ocrEngine.renderText(new File(
-					"/storage/emulated/0/Download/projectOCR/hsbc.jpg"));
-			Log.i("VIVEK", "Renderred Text is :  " + renderedText);
+			launchCameraActivity();
 		}
 		else if (id == R.id.selectImagebutton) {
 			pickImageFromDevice();
 		}
+		else if(id == R.id.imageView1) {
+			setExtractedText();
+		}
+	}
 
+	private void setExtractedText() {
+
+		File f = this.locImageFileList.get(this.getCurSelectedIndex());
+		String renderedText = this.ocrEngine.renderText(f);
+		String infoText = getString(R.string.info_extracted_) + "\n" + renderedText;
+		this.infoTextView.setText(infoText);
 	}
 
 	private void pickImageFromDevice() {
@@ -219,6 +230,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		Bitmap bitmap = BitmapFactory.decodeFile(this.locImageFileList.get(
 				this.getCurSelectedIndex()).toString());
 		this.imageView.setImageBitmap(bitmap);
+		
+		this.infoTextView.setText("Click image to extract text");
 	}
 
 	private void setButtonState() {

@@ -10,12 +10,14 @@ import java.util.UUID;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -107,7 +109,43 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback,
 
 		try {
 			this.camera.setPreviewDisplay(holder);
-			this.camera.setDisplayOrientation(90);
+
+			// TODO: VIVEK | To write code for getting the cameraId ie either
+			// front camera or back camera
+			int cameraId = 0;
+			Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+			android.hardware.Camera.getCameraInfo(cameraId, info);
+			int rotation = getWindowManager().getDefaultDisplay().getRotation();
+			int degrees = 0;
+			switch (rotation) {
+			case Surface.ROTATION_0:
+				degrees = 0;
+				break;
+
+			case Surface.ROTATION_90:
+				degrees = 90;
+				break;
+
+			case Surface.ROTATION_180:
+				degrees = 180;
+				break;
+
+			case Surface.ROTATION_270:
+				degrees = 270;
+				break;
+			}
+
+			int result;
+			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+				result = (info.orientation + degrees) % 360;
+				result = (360 - result) % 360; // compensate the mirror
+			}
+			else { // back-facing
+				result = (info.orientation - degrees + 360) % 360;
+			}
+
+			camera.setDisplayOrientation(result);
+			// this.camera.setDisplayOrientation(90);
 			this.camera.startPreview();
 			this.isCameraOn = true;
 			Log.d(TAG, "Camera preview started");
@@ -166,6 +204,8 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback,
 		public void onPictureTaken(byte[] data, Camera camera) {
 
 			Bitmap pictureTaken = BitmapFactory.decodeByteArray(data, 0, data.length);
+			pictureTaken = rotateBitmap(pictureTaken, 90);
+
 			String imageFilePath = Environment.getExternalStoragePublicDirectory(
 					Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
 					+ File.separator
@@ -187,28 +227,16 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback,
 			catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-			finish();
 
-			/*
-			 * ContentValues contentValues = new ContentValues();
-			 * contentValues.put(Images.Media.TITLE, "image");
-			 * 
-			 * Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI,
-			 * contentValues);
-			 * 
-			 * OutputStream outputStream = null; try { outputStream =
-			 * getContentResolver().openOutputStream(uri); boolean compressed =
-			 * pictureTaken.compress(Bitmap.CompressFormat.JPEG, 20,
-			 * outputStream); Log.e(TAG, "picture successfully compressed at:" +
-			 * uri + compressed); outputStream.close(); } catch
-			 * (FileNotFoundException e) { e.printStackTrace(); } catch
-			 * (IOException e) { e.printStackTrace(); }
-			 * 
-			 * Log.e(TAG, "jpeg data length " + data.length); Intent intent =
-			 * new Intent(); intent.putExtra(CameraCapture.JPEG_STRING, uri);
-			 * setResult(NG911Activity.IMAGE_RECEIVED_RESULT, intent); finish();
-			 */
+			finish();
 		}
 	};
+
+	public static Bitmap rotateBitmap(Bitmap source, float angle) {
+
+		Matrix matrix = new Matrix();
+		matrix.postRotate(angle);
+		return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix,
+				true);
+	}
 }
