@@ -40,6 +40,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private Button selectImagebutton = null;
 	private int curSelectedIndex = -1;
 	private static final int REQUEST_CODE = 1;
+	private static final int REQUEST_CODE_TAKE_IMAGE = 2;
 	private OCREngine ocrEngine = null;
 
 	private int getCurSelectedIndex() {
@@ -179,13 +180,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		intent.setType("image/*");
 		intent.setAction(Intent.ACTION_GET_CONTENT);
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		startActivityForResult(intent, REQUEST_CODE);
+		startActivityForResult(intent, MainActivity.REQUEST_CODE);
 	}
 
 	private void launchCameraActivity() {
 
 		Intent cameraLanchIntent = new Intent(this, CameraActivity.class);
-		startActivity(cameraLanchIntent);
+		//startActivity(cameraLanchIntent);
+		startActivityForResult(cameraLanchIntent, MainActivity.REQUEST_CODE_TAKE_IMAGE);
 	}
 
 	@Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -199,19 +201,28 @@ public class MainActivity extends Activity implements View.OnClickListener {
 					Uri filePathUri = Uri.parse(cursor.getString(column_index));
 					String filePath = filePathUri.getPath();
 					Log.d("VIVEK", "File Name & PATH are:" + filePath);
-					File file = new File(filePath);
-					if (file.isFile() == true) {
-						if (file.getName().endsWith(".png") == true
-								|| file.getName().endsWith(".jpg") == true
-								|| file.getName().endsWith(".jpeg") == true) {
-							this.locImageFileList.add(file);
-							this.changeImage(MainActivity.Naviagation.LAST);
-						}
-					}
+					addNewItemInImageList(filePath);
 				}
 			}
 		}
+		else if(requestCode == MainActivity.REQUEST_CODE_TAKE_IMAGE && resultCode == Activity.RESULT_OK) {
+			addNewItemInImageList(intent.getStringExtra("IMAGE_PATH"));
+		}
+		
 		super.onActivityResult(requestCode, resultCode, intent);
+	}
+
+	private void addNewItemInImageList(String filePath) {
+
+		File file = new File(filePath);
+		if (file.isFile() == true) {
+			if (file.getName().endsWith(".png") == true
+					|| file.getName().endsWith(".jpg") == true
+					|| file.getName().endsWith(".jpeg") == true) {
+				this.locImageFileList.add(file);
+				this.changeImage(MainActivity.Naviagation.LAST);
+			}
+		}
 	}
 
 	private void changeImage(Naviagation nav) {

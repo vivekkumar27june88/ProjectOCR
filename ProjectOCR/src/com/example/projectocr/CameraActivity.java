@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -228,7 +229,10 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback,
 				e.printStackTrace();
 			}
 
-			finish();
+			Intent intentMessage = new Intent();
+			intentMessage.putExtra("IMAGE_PATH", imageFilePath);
+		    setResult(RESULT_OK, intentMessage);			
+		    finish();
 		}
 	};
 
