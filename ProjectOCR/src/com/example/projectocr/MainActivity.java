@@ -10,6 +10,7 @@ package com.example.projectocr;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,7 +27,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +38,7 @@ import java.util.UUID;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
+	private final String TAG = MainActivity.class.getSimpleName();
 	private ArrayList<File> locImageFileList = null;
 	private String imageDirPath = null;
 	private ImageView imageView = null;
@@ -64,8 +69,54 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		NEXT, PREV, LAST, NO_CHANGE
 	};
 
+	private void setupSampleData() {
+
+		String sampleDataDirPath = Environment.getExternalStoragePublicDirectory(
+				Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+				+ File.separator + "projectOCR" + File.separator;
+
+		File sampleDataDirFile = new File(sampleDataDirPath);
+		if (sampleDataDirFile.exists() == false) {
+			if (sampleDataDirFile.mkdirs() == false)
+				Log.v(TAG, "ERROR: Creation of directory " + sampleDataDirFile
+						+ " on sdcard failed");
+			else
+				Log.v(TAG, "Created directory " + sampleDataDirFile + " on sdcard");
+		}
+
+		String[] sampleDataFileNames = { "sample_1.jpg", "sample_2.jpg", "sample_3.jpg",
+				"sample_4.jpg", "sample_5.png", "sample_6.jpg" };
+
+		for (String sampleDataFileName : sampleDataFileNames) {
+			String sampleDataPath = sampleDataDirPath + sampleDataFileName;
+			File tessEngDataFile = new File(sampleDataPath);
+			if (tessEngDataFile.exists() == false) {
+				try {
+					AssetManager assetManager = getAssets();
+					InputStream inputStream = assetManager.open("sample" + File.separator
+							+ sampleDataFileName);
+					OutputStream outputStream = new FileOutputStream(sampleDataPath);
+					byte[] buf = new byte[1024];
+					int len = 0;
+
+					while ((len = inputStream.read(buf)) > 0)
+						outputStream.write(buf, 0, len);
+
+					inputStream.close();
+					outputStream.close();
+
+					Log.v(TAG, "Copied " + sampleDataPath);
+				}
+				catch (IOException e) {
+					Log.e(TAG, "Was unable to copy " + sampleDataPath + e.toString());
+				}
+			}
+		}
+	}
+
 	private void init() {
 
+		setupSampleData();
 		this.ocrEngine = new OCREngine(getApplicationContext());
 		// imageDirPath = getFilesDir().getAbsolutePath() + File.separator +
 		// "images";
@@ -159,14 +210,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			changeImage(MainActivity.Naviagation.NEXT);
 		}
 		else if (id == R.id.start_camera_button) {
-			//pickImageUsingImageCaptureIntent();
+			// pickImageUsingImageCaptureIntent();
 			launchCameraActivity();
 		}
 		else if (id == R.id.selectImagebutton) {
 			pickImageFromDevice();
 		}
 		else if (id == R.id.imageView1) {
-			setExtractedText();
+			if (this.locImageFileList.size() > 0)
+				setExtractedText();
 		}
 	}
 
@@ -190,24 +242,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private void pickImageUsingImageCaptureIntent() {
 
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-	    String imageFileName = "JPEG_" + timeStamp + "_";
-	    File storageDir = new File(Environment.getExternalStoragePublicDirectory(
+		String imageFileName = "JPEG_" + timeStamp + "_";
+		File storageDir = new File(Environment.getExternalStoragePublicDirectory(
 				Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
 				+ File.separator + "projectOCR");
-	    File image = null;
+		File image = null;
 		try {
-			image = File.createTempFile(
-			    imageFileName,  /* prefix */
-			    ".jpg",         /* suffix */ 
-			    storageDir      /* directory */
+			image = File.createTempFile(imageFileName, /* prefix */
+					".jpg", /* suffix */
+					storageDir /* directory */
 			);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
-		} 
-  
+		}
+
 		this.imageFilePathToBeCapture = image.getAbsolutePath();
 		Uri fileUri = Uri.fromFile(image);
- 
+
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
@@ -276,8 +328,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			this.setCurSelectedIndex(this.locImageFileList.size() - 1);
 		}
 
-		Bitmap bitmap = BitmapFactory.decodeFile(this.locImageFileList.get(
-				this.getCurSelectedIndex()).toString());
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inSampleSize = 2;
+
+		Bitmap bitmap = BitmapFactory.decodeFile(
+				this.locImageFileList.get(this.getCurSelectedIndex()).toString(), options);
 		this.imageView.setImageBitmap(bitmap);
 
 		this.infoTextView.setText("Click image to extract text");

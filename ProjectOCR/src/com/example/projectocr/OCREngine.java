@@ -44,9 +44,9 @@ public class OCREngine {
 				Log.v(TAG, "Created directory " + tessDataDirPath + " on sdcard");
 		}
 
-		String[] tessDataFileNames = {"eng.traineddata", "number.jpg"};/*{ "eng.cube.bigrams", "eng.cube.fold", "eng.cube.lm",
+		String[] tessDataFileNames = { "eng.cube.bigrams", "eng.cube.fold", "eng.cube.lm",
 				"eng.cube.nn", "eng.cube.params", "eng.cube.size", "eng.cube.word-freq",
-				"eng.tesseract_cube.nn", "eng.traineddata", "grc.traineddata", "number.png" };*/
+				"eng.tesseract_cube.nn", "eng.traineddata", "grc.traineddata", "number.png" };
 
 		for (String tessDataFileName : tessDataFileNames) {
 			String tessEngDataPath = tessDataDirPath + tessDataFileName;
