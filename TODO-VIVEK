@@ -1,3 +1,6 @@
+[0]
+Documentation, UML diagram, Sequence diagram, DLD, HDL etc.
+
 [1] 
 To remove duplicate code as in case of loading assest in both OCREngine and
 MainActivity class. Need to create one Util class for handling this.
