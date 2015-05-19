@@ -9,6 +9,7 @@
 package com.example.projectocr;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.database.Cursor;
@@ -17,6 +18,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -36,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener, Runnable {
 
 	private final String TAG = MainActivity.class.getSimpleName();
 	private ArrayList<File> locImageFileList = null;
@@ -53,6 +56,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private String imageFilePathToBeCapture = null;
 	private OCREngine ocrEngine = null;
+	private ProgressDialog progressDlg = null;
 
 	private int getCurSelectedIndex() {
 
@@ -217,8 +221,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			pickImageFromDevice();
 		}
 		else if (id == R.id.imageView1) {
-			if (this.locImageFileList.size() > 0)
-				setExtractedText();
+			if (this.locImageFileList.size() > 0) {
+				this.progressDlg = ProgressDialog.show(MainActivity.this, "ProjectOCR",
+						"Extrating info ...", true, false);
+				new Thread(this).start();
+			}
 		}
 	}
 
@@ -227,7 +234,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		File f = this.locImageFileList.get(this.getCurSelectedIndex());
 		String renderedText = this.ocrEngine.renderText(f);
 		String infoText = getString(R.string.info_extracted_) + "\n" + renderedText;
-		this.infoTextView.setText(infoText);
+		//this.infoTextView.setText(infoText);
+		
+	    Message msg = this.handler.obtainMessage(0, infoText);
+	    this.handler.sendMessage(msg);
 	}
 
 	private void pickImageFromDevice() {
@@ -343,4 +353,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		this.prevButton.setEnabled(this.getCurSelectedIndex() > 0);
 		this.nextButton.setEnabled(this.getCurSelectedIndex() < (this.locImageFileList.size() - 1));
 	}
+
+	@Override public void run() {
+		setExtractedText();
+		handler.sendEmptyMessage(0);
+	}
+
+	private Handler handler = new Handler() {
+		@Override public void handleMessage(Message msg) {
+			MainActivity.this.infoTextView.setText((String)msg.obj);
+			MainActivity.this.progressDlg.dismiss();
+			handler.removeMessages(0);
+		}
+	};
 }
