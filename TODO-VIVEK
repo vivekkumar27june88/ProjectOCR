@@ -1,0 +1,52 @@
+[1] 
+To remove duplicate code as in case of loading assest in both OCREngine and
+MainActivity class. Need to create one Util class for handling this.
+
+[2].
+To put a time taking task like loading image from file and running ocr engine 
+in Thread or AsyncTask.
+
+[3].
+To fix the issue which is coming in using IMAGE_CAPTURE_INTENT inside OnActivityResult()
+function.
+
+[4].
+To add code for extracting only the frame region from the whole camera preview image.
+
+[5].
+To added option i.e. check box in actionbar for allowing user to use either the 
+default camera of phone or to use OCRProject camera
+
+[6].
+To play with all flags/setting of Tess-two library for finding which setting combinations
+give the best/fast/efficient result
+
+[7].
+To to image processing like increasing image contrast/gray-scaling/ etc for making the image
+more suitable for OCR engine to render text.
+
+[9].
+After getting the optimum result from OCR engine, then to add Regular Expression for find the 
+patters like Account Name, Valid date etc.
+
+[10].
+To add a debug activity for showing the whole rendering text, as the text-view below the image
+is too small to show all the extracted text.
+
+[11].
+To make the frame of CameraActivity resizable for allowing more controls to user.
+
+[12].
+To add activity for showing thumbnails in page manner of all image in the OCR folder.
+
+[13].
+To change the directory from download to app-data, so that upon uninstalling the app
+make the apk manager to remove the app data.
+
+[14].
+To persist setting data of the action-bar so that user don't have to repeat the setting
+on every run.
+
+
+.....and many more, but the important one is to utilize the OCR engine fully.
+
