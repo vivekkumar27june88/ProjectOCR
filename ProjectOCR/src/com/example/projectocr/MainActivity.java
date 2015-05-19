@@ -26,7 +26,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -43,7 +46,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private static final int REQUEST_CODE = 1;
 	private static final int REQUEST_CODE_TAKE_IMAGE = 2;
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-	private static String imageFilePathToBeCapture = null;
+	private String imageFilePathToBeCapture = null;
 	private OCREngine ocrEngine = null;
 
 	private int getCurSelectedIndex() {
@@ -139,9 +142,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	@Override public boolean onOptionsItemSelected(MenuItem item) {
 
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
@@ -189,14 +189,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	private void pickImageUsingImageCaptureIntent() {
 
-		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		this.imageFilePathToBeCapture = Environment.getExternalStoragePublicDirectory(
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	    String imageFileName = "JPEG_" + timeStamp + "_";
+	    File storageDir = new File(Environment.getExternalStoragePublicDirectory(
 				Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
-				+ File.separator + "projectOCR" + File.separator + (UUID.randomUUID().toString() + ".jpg");
-
-		File f = new File(this.imageFilePathToBeCapture);
-		Uri fileUri = Uri.fromFile(f);
-
+				+ File.separator + "projectOCR");
+	    File image = null;
+		try {
+			image = File.createTempFile(
+			    imageFileName,  /* prefix */
+			    ".jpg",         /* suffix */ 
+			    storageDir      /* directory */
+			);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+  
+		this.imageFilePathToBeCapture = image.getAbsolutePath();
+		Uri fileUri = Uri.fromFile(image);
+ 
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 	}
@@ -204,7 +216,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private void launchCameraActivity() {
 
 		Intent cameraLanchIntent = new Intent(this, CameraActivity.class);
-		// startActivity(cameraLanchIntent);
 		startActivityForResult(cameraLanchIntent, MainActivity.REQUEST_CODE_TAKE_IMAGE);
 	}
 
@@ -232,6 +243,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				addNewItemInImageList(this.imageFilePathToBeCapture);
 			}
 			else {
+				new File(imageFilePathToBeCapture).delete();
 			}
 			this.imageFilePathToBeCapture = null;
 		}
@@ -242,17 +254,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private void addNewItemInImageList(String filePath) {
 
 		File file = new File(filePath);
-		if (file.isFile() == true) {
-			if (file.getName().endsWith(".png") == true || file.getName().endsWith(".jpg") == true
-					|| file.getName().endsWith(".jpeg") == true) {
-				this.locImageFileList.add(file);
-				this.changeImage(MainActivity.Naviagation.LAST);
-			}
-		}
-	}
-	
-	private void addNewItemInImageList(File file) {
-
 		if (file.isFile() == true) {
 			if (file.getName().endsWith(".png") == true || file.getName().endsWith(".jpg") == true
 					|| file.getName().endsWith(".jpeg") == true) {
